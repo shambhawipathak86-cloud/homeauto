@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Create Account | HomeAuto</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
+
+</head>
+
+<body class="auth-page">
+
+<div class="bg-orb orb-one"></div>
+<div class="bg-orb orb-two"></div>
+
+<div class="auth-wrapper">
+
+    <div class="auth-info">
+
+        <a th:href="@{/}"
+           class="logo">
+
+            <i class="fa-solid fa-house-signal"></i>
+            HomeAuto
+
+        </a>
+
+        <div class="auth-status">
+            <span></span>
+            START YOUR SMART HOME
+        </div>
+
+        <h1>
+            Build Your<br>
+            <span>Smart Home.</span>
+        </h1>
+
+        <p>
+            Create your account and start controlling
+            your connected home from anywhere.
+        </p>
+
+        <div class="auth-feature">
+
+            <i class="fa-solid fa-microchip"></i>
+
+            <div>
+                <strong>Smart Devices</strong>
+                <small>Manage all your devices in one place.</small>
+            </div>
+
+        </div>
+
+        <div class="auth-feature">
+
+            <i class="fa-solid fa-robot"></i>
+
+            <div>
+                <strong>Automation</strong>
+                <small>Create intelligent home rules.</small>
+            </div>
+
+        </div>
+
+        <div class="auth-feature">
+
+            <i class="fa-solid fa-chart-line"></i>
+
+            <div>
+                <strong>Monitoring</strong>
+                <small>Track your home environment.</small>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="auth-card">
+
+        <div class="mobile-auth-logo">
+
+            <a th:href="@{/}"
+               class="logo">
+
+                <i class="fa-solid fa-house-signal"></i>
+                HomeAuto
+
+            </a>
+
+        </div>
+
+
+        <div class="auth-card-heading">
+
+            <span>GET STARTED</span>
+
+            <h2>Create Account</h2>
+
+            <p>
+                Register as a homeowner.
+            </p>
+
+        </div>
+
+
+        <div class="alert error"
+             th:if="${error}"
+             th:text="${error}">
+        </div>
+
+
+        <form method="post"
+              th:action="@{/register}"
+              th:object="${user}"
+              class="auth-form">
+
+            <div class="field">
+
+                <label for="fullName">
+                    <i class="fa-solid fa-user"></i>
+                    Full Name
+                </label>
+
+                <input type="text"
+                       id="fullName"
+                       th:field="*{fullName}"
+                       placeholder="Your full name"
+                       required>
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="email">
+                    <i class="fa-solid fa-envelope"></i>
+                    Email
+                </label>
+
+                <input type="email"
+                       id="email"
+                       th:field="*{email}"
+                       placeholder="you@example.com"
+                       required>
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="registerPassword">
+                    <i class="fa-solid fa-lock"></i>
+                    Password
+                </label>
+
+                <div class="password-wrapper">
+
+                    <input type="password"
+                           id="registerPassword"
+                           th:field="*{password}"
+                           placeholder="Create a strong password"
+                           required>
+
+                    <button type="button"
+                            onclick="togglePassword('registerPassword', this)"
+                            class="password-toggle">
+
+                        <i class="fa-solid fa-eye"></i>
+
+                    </button>
+
+                </div>
+
+                <div class="strength-bar">
+                    <span></span>
+                </div>
+
+                <small id="strengthText">
+                    Password strength
+                </small>
+
+            </div>
+
+
+            <button type="submit"
+                    class="auth-button">
+
+                <i class="fa-solid fa-user-plus"></i>
+
+                Create Account
+
+            </button>
+
+        </form>
+
+
+        <div class="auth-switch">
+
+            Already have an account?
+
+            <a th:href="@{/login}">
+                Sign in
+            </a>
+
+        </div>
+
+
+        <a th:href="@{/}"
+           class="back-home">
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+            Back to Home
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<script th:src="@{/js/app.js}"></script>
+
+</body>
+</html>

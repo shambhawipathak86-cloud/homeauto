@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard | HomeAuto</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
+
+</head>
+
+<body class="dashboard-page">
+
+<nav class="dashboard-nav">
+
+    <div class="dashboard-brand">
+
+        <i class="fa-solid fa-house-signal"></i>
+
+        <span>HomeAuto</span>
+
+        <small>ADMIN PANEL</small>
+
+    </div>
+
+    <form th:action="@{/logout}"
+          method="post">
+
+        <input type="hidden"
+               th:name="${_csrf.parameterName}"
+               th:value="${_csrf.token}">
+
+        <button class="logout-btn">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            Logout
+
+        </button>
+
+    </form>
+
+</nav>
+
+
+<main class="dashboard-container">
+
+    <div class="dashboard-title">
+
+        <div>
+
+            <span>ADMINISTRATION</span>
+
+            <h1>System Dashboard</h1>
+
+            <p>
+                Manage users, devices and platform settings.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="alert success"
+         th:if="${param.success}">
+
+        <i class="fa-solid fa-circle-check"></i>
+
+        Operation completed successfully.
+
+    </div>
+
+
+    <div class="alert error"
+         th:if="${param.error}">
+
+        <i class="fa-solid fa-circle-exclamation"></i>
+
+        Operation could not be completed.
+
+    </div>
+
+
+    <section class="stats-grid">
+
+        <div class="stat-card">
+
+            <div class="stat-icon green">
+                <i class="fa-solid fa-users"></i>
+            </div>
+
+            <div>
+                <small>Homeowners</small>
+                <strong th:text="${homeownerCount}">0</strong>
+            </div>
+
+        </div>
+
+        <div class="stat-card">
+
+            <div class="stat-icon blue">
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+
+            <div>
+                <small>Admins</small>
+                <strong th:text="${adminCount}">0</strong>
+            </div>
+
+        </div>
+
+        <div class="stat-card">
+
+            <div class="stat-icon orange">
+                <i class="fa-solid fa-user-clock"></i>
+            </div>
+
+            <div>
+                <small>Pending Users</small>
+                <strong th:text="${pendingCount}">0</strong>
+            </div>
+
+        </div>
+
+        <div class="stat-card">
+
+            <div class="stat-icon purple">
+                <i class="fa-solid fa-microchip"></i>
+            </div>
+
+            <div>
+                <small>Pending Devices</small>
+                <strong th:text="${pendingDeviceCount}">0</strong>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- USERS -->
+
+    <section class="dashboard-section">
+
+        <div class="section-title-row">
+
+            <div>
+                <span>ACCOUNT MANAGEMENT</span>
+                <h2>User Management</h2>
+            </div>
+
+        </div>
+
+
+        <div class="admin-form-card">
+
+            <form th:if="${editUser == null}"
+                  th:action="@{/admin/users/add}"
+                  method="post"
+                  class="admin-grid-form">
+
+                <input type="hidden"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}">
+
+                <input type="text"
+                       name="fullName"
+                       placeholder="Full Name"
+                       required>
+
+                <input type="email"
+                       name="email"
+                       placeholder="Email"
+                       required>
+
+                <input type="password"
+                       name="password"
+                       placeholder="Password"
+                       required>
+
+                <select name="role"
+                        required>
+
+                    <option value="HOMEOWNER">
+                        Homeowner
+                    </option>
+
+                    <option value="ADMIN">
+                        Admin
+                    </option>
+
+                </select>
+
+                <button class="primary-btn"
+                        type="submit">
+
+                    <i class="fa-solid fa-user-plus"></i>
+                    Add User
+
+                </button>
+
+            </form>
+
+
+            <form th:if="${editUser != null}"
+                  th:action="@{'/admin/users/update/' + ${editUser.id}}"
+                  method="post"
+                  class="admin-grid-form">
+
+                <input type="hidden"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}">
+
+                <input type="text"
+                       name="fullName"
+                       th:value="${editUser.fullName}"
+                       required>
+
+                <input type="email"
+                       name="email"
+                       th:value="${editUser.email}"
+                       required>
+
+                <input type="password"
+                       name="password"
+                       placeholder="New password (optional)">
+
+                <select name="role">
+
+                    <option value="HOMEOWNER"
+                            th:selected="${editUser.role.name() == 'HOMEOWNER'}">
+                        Homeowner
+                    </option>
+
+                    <option value="ADMIN"
+                            th:selected="${editUser.role.name() == 'ADMIN'}">
+                        Admin
+                    </option>
+
+                </select>
+
+                <button class="primary-btn"
+                        type="submit">
+
+                    <i class="fa-solid fa-pen"></i>
+                    Update User
+
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                <tr th:each="user : ${users}">
+
+                    <td th:text="${user.fullName}">
+                        User
+                    </td>
+
+                    <td th:text="${user.email}">
+                        email
+                    </td>
+
+                    <td>
+                        <span class="badge"
+                              th:text="${user.role}">
+                        </span>
+                    </td>
+
+                    <td>
+
+                        <span class="badge"
+                              th:text="${user.approvalStatus}">
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <div class="table-actions">
+
+                            <a th:href="@{'/admin/users/edit/' + ${user.id}}"
+                               class="icon-btn">
+
+                                <i class="fa-solid fa-pen"></i>
+
+                            </a>
+
+
+                            <form th:action="@{'/admin/users/delete/' + ${user.id}}"
+                                  method="post">
+
+                                <input type="hidden"
+                                       th:name="${_csrf.parameterName}"
+                                       th:value="${_csrf.token}">
+
+                                <button class="icon-btn danger">
+
+                                    <i class="fa-solid fa-trash"></i>
+
+                                </button>
+
+                            </form>
+
+
+                            <form th:if="${user.approvalStatus.name() == 'PENDING'}"
+                                  th:action="@{'/admin/approve/' + ${user.id}}"
+                                  method="post">
+
+                                <input type="hidden"
+                                       th:name="${_csrf.parameterName}"
+                                       th:value="${_csrf.token}">
+
+                                <button class="icon-btn success">
+
+                                    <i class="fa-solid fa-check"></i>
+
+                                </button>
+
+                            </form>
+
+
+                            <form th:if="${user.approvalStatus.name() == 'PENDING'}"
+                                  th:action="@{'/admin/reject/' + ${user.id}}"
+                                  method="post">
+
+                                <input type="hidden"
+                                       th:name="${_csrf.parameterName}"
+                                       th:value="${_csrf.token}">
+
+                                <button class="icon-btn danger">
+
+                                    <i class="fa-solid fa-xmark"></i>
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- DEVICES -->
+
+    <section class="dashboard-section">
+
+        <div class="section-title-row">
+
+            <div>
+                <span>DEVICE MANAGEMENT</span>
+                <h2>Device Compatibility</h2>
+            </div>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                <tr>
+                    <th>Device</th>
+                    <th>Type</th>
+                    <th>Room</th>
+                    <th>Owner</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                <tr th:each="device : ${devices}">
+
+                    <td th:text="${device.name}">
+                        Device
+                    </td>
+
+                    <td th:text="${device.type}">
+                        Type
+                    </td>
+
+                    <td th:text="${device.room}">
+                        Room
+                    </td>
+
+                    <td th:text="${device.owner.fullName}">
+                        Owner
+                    </td>
+
+                    <td>
+                        <span class="badge"
+                              th:text="${device.compatibilityStatus}">
+                        </span>
+                    </td>
+
+                    <td>
+
+                        <div class="table-actions">
+
+                            <form th:if="${device.compatibilityStatus.name() != 'APPROVED'}"
+                                  th:action="@{'/admin/devices/approve/' + ${device.id}}"
+                                  method="post">
+
+                                <input type="hidden"
+                                       th:name="${_csrf.parameterName}"
+                                       th:value="${_csrf.token}">
+
+                                <button class="icon-btn success">
+
+                                    <i class="fa-solid fa-check"></i>
+
+                                </button>
+
+                            </form>
+
+
+                            <form th:if="${device.compatibilityStatus.name() != 'REJECTED'}"
+                                  th:action="@{'/admin/devices/reject/' + ${device.id}}"
+                                  method="post">
+
+                                <input type="hidden"
+                                       th:name="${_csrf.parameterName}"
+                                       th:value="${_csrf.token}">
+
+                                <button class="icon-btn danger">
+
+                                    <i class="fa-solid fa-xmark"></i>
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- SETTINGS -->
+
+    <section class="dashboard-section">
+
+        <div class="section-title-row">
+
+            <div>
+                <span>PLATFORM CONFIGURATION</span>
+                <h2>System Settings</h2>
+            </div>
+
+        </div>
+
+
+        <div class="admin-form-card">
+
+            <form th:action="@{/admin/settings/save}"
+                  method="post"
+                  class="admin-grid-form">
+
+                <input type="hidden"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}">
+
+                <input type="text"
+                       name="settingKey"
+                       placeholder="Setting Key"
+                       required>
+
+                <input type="text"
+                       name="settingValue"
+                       placeholder="Setting Value"
+                       required>
+
+                <button class="primary-btn"
+                        type="submit">
+
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Save Setting
+
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <div class="settings-grid">
+
+            <div class="setting-card"
+                 th:each="setting : ${settings}">
+
+                <div>
+
+                    <strong th:text="${setting.settingKey}">
+                        key
+                    </strong>
+
+                    <span th:text="${setting.settingValue}">
+                        value
+                    </span>
+
+                </div>
+
+
+                <form th:action="@{'/admin/settings/delete/' + ${setting.id}}"
+                      method="post">
+
+                    <input type="hidden"
+                           th:name="${_csrf.parameterName}"
+                           th:value="${_csrf.token}">
+
+                    <button class="icon-btn danger">
+
+                        <i class="fa-solid fa-trash"></i>
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script th:src="@{/js/app.js}"></script>
+
+</body>
+</html>

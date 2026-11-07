@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Login | HomeAuto</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
+
+</head>
+
+<body class="auth-page">
+
+<div class="bg-orb orb-one"></div>
+<div class="bg-orb orb-two"></div>
+
+<div class="auth-wrapper">
+
+    <div class="auth-info">
+
+        <a th:href="@{/}"
+           class="logo">
+            <i class="fa-solid fa-house-signal"></i>
+            HomeAuto
+        </a>
+
+        <div class="auth-status">
+            <span></span>
+            SECURE SMART HOME PLATFORM
+        </div>
+
+        <h1>
+            Welcome<br>
+            <span>Back.</span>
+        </h1>
+
+        <p>
+            Sign in to control your devices, manage automation
+            and monitor your home environment.
+        </p>
+
+        <div class="auth-feature">
+
+            <i class="fa-solid fa-shield-halved"></i>
+
+            <div>
+                <strong>Secure & Reliable</strong>
+                <small>Your home data stays protected.</small>
+            </div>
+
+        </div>
+
+        <div class="auth-feature">
+
+            <i class="fa-solid fa-bolt"></i>
+
+            <div>
+                <strong>Instant Control</strong>
+                <small>Manage your smart devices instantly.</small>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="auth-card">
+
+        <div class="mobile-auth-logo">
+
+            <a th:href="@{/}"
+               class="logo">
+                <i class="fa-solid fa-house-signal"></i>
+                HomeAuto
+            </a>
+
+        </div>
+
+        <div class="auth-card-heading">
+
+            <span>WELCOME BACK</span>
+
+            <h2>Sign in</h2>
+
+            <p>
+                Enter your account details below.
+            </p>
+
+        </div>
+
+
+        <div class="alert error"
+             th:if="${param.error}">
+
+            <i class="fa-solid fa-circle-exclamation"></i>
+
+            Invalid email or password.
+
+        </div>
+
+
+        <div class="alert success"
+             th:if="${param.logout}">
+
+            <i class="fa-solid fa-circle-check"></i>
+
+            You have been logged out successfully.
+
+        </div>
+
+
+        <div class="alert info"
+             th:if="${param.registered}">
+
+            <i class="fa-solid fa-clock"></i>
+
+            Registration successful. Wait for admin approval.
+
+        </div>
+
+
+        <form method="post"
+              th:action="@{/login}"
+              class="auth-form">
+
+            <div class="field">
+
+                <label for="username">
+                    <i class="fa-solid fa-envelope"></i>
+                    Email
+                </label>
+
+                <input type="email"
+                       id="username"
+                       name="username"
+                       placeholder="you@example.com"
+                       autocomplete="email"
+                       required>
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="password">
+                    <i class="fa-solid fa-lock"></i>
+                    Password
+                </label>
+
+                <div class="password-wrapper">
+
+                    <input type="password"
+                           id="password"
+                           name="password"
+                           placeholder="Enter your password"
+                           autocomplete="current-password"
+                           required>
+
+                    <button type="button"
+                            onclick="togglePassword('password', this)"
+                            class="password-toggle">
+
+                        <i class="fa-solid fa-eye"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <button type="submit"
+                    class="auth-button">
+
+                <i class="fa-solid fa-right-to-bracket"></i>
+
+                Sign In
+
+            </button>
+
+        </form>
+
+
+        <div class="auth-switch">
+
+            Don't have an account?
+
+            <a th:href="@{/register}">
+                Create account
+            </a>
+
+        </div>
+
+
+        <a th:href="@{/}"
+           class="back-home">
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+            Back to Home
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<script th:src="@{/js/app.js}"></script>
+
+</body>
+</html>

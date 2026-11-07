@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Homeowner Dashboard | HomeAuto</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
+
+</head>
+
+<body class="dashboard-page">
+
+<nav class="dashboard-nav">
+
+    <div class="dashboard-brand">
+
+        <i class="fa-solid fa-house-signal"></i>
+
+        <span>HomeAuto</span>
+
+    </div>
+
+
+    <div class="dashboard-user">
+
+        <span>
+            <i class="fa-solid fa-user"></i>
+
+            <strong th:text="${user.fullName}">
+                User
+            </strong>
+        </span>
+
+        <form th:action="@{/logout}"
+              method="post">
+
+            <input type="hidden"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+
+            <button class="logout-btn">
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+
+            </button>
+
+        </form>
+
+    </div>
+
+</nav>
+
+
+<main class="dashboard-container">
+
+    <div class="dashboard-title">
+
+        <div>
+
+            <span>SMART HOME</span>
+
+            <h1>
+                Welcome,
+                <strong th:text="${user.fullName}">
+                    User
+                </strong>
+            </h1>
+
+            <p>
+                Control your devices and automate your home.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="alert success"
+         th:if="${param.success}">
+
+        <i class="fa-solid fa-circle-check"></i>
+
+        Operation completed successfully.
+
+    </div>
+
+
+    <div class="alert error"
+         th:if="${param.error}">
+
+        <i class="fa-solid fa-circle-exclamation"></i>
+
+        Something went wrong.
+
+    </div>
+
+
+    <!-- STATS -->
+
+    <section class="stats-grid">
+
+        <div class="stat-card">
+
+            <div class="stat-icon green">
+                <i class="fa-solid fa-microchip"></i>
+            </div>
+
+            <div>
+
+                <small>Total Devices</small>
+
+                <strong th:text="${deviceCount}">
+                    0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon blue">
+                <i class="fa-solid fa-power-off"></i>
+            </div>
+
+            <div>
+
+                <small>Devices ON</small>
+
+                <strong th:text="${onDeviceCount}">
+                    0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon purple">
+                <i class="fa-solid fa-robot"></i>
+            </div>
+
+            <div>
+
+                <small>Automation Rules</small>
+
+                <strong th:text="${ruleCount}">
+                    0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon orange">
+                <i class="fa-solid fa-temperature-half"></i>
+            </div>
+
+            <div>
+
+                <small>Temperature</small>
+
+                <strong>
+                    <span th:text="${latestTemperature}">
+                        --
+                    </span>
+                    <small>°C</small>
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- DEVICES -->
+
+    <section class="dashboard-section">
+
+        <div class="section-title-row">
+
+            <div>
+
+                <span>SMART DEVICES</span>
+
+                <h2>Device Control</h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="admin-form-card">
+
+            <form th:action="@{/homeowner/devices/add}"
+                  method="post"
+                  class="admin-grid-form">
+
+                <input type="hidden"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}">
+
+                <input type="text"
+                       name="name"
+                       placeholder="Device Name"
+                       required>
+
+                <select name="type"
+                        required>
+
+                    <option value="">
+                        Device Type
+                    </option>
+
+                    <option value="LIGHT">
+                        Light
+                    </option>
+
+                    <option value="FAN">
+                        Fan
+                    </option>
+
+                    <option value="AC">
+                        AC
+                    </option>
+
+                    <option value="TV">
+                        TV
+                    </option>
+
+                    <option value="DOOR">
+                        Door
+                    </option>
+
+                    <option value="CAMERA">
+                        Camera
+                    </option>
+
+                    <option value="OTHER">
+                        Other
+                    </option>
+
+                </select>
+
+                <input type="text"
+                       name="room"
+                       placeholder="Room">
+
+                <button type="submit"
+                        class="primary-btn">
+
+                    <i class="fa-solid fa-plus"></i>
+                    Add Device
+
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <div class="device-grid">
+
+            <div class="device-card"
+                 th:each="device : ${devices}">
+
+                <div class="device-card-top">
+
+                    <div class="device-type-icon">
+
+                        <i th:if="${device.type == 'LIGHT'}"
+                           class="fa-solid fa-lightbulb"></i>
+
+                        <i th:if="${device.type == 'FAN'}"
+                           class="fa-solid fa-fan"></i>
+
+                        <i th:if="${device.type == 'AC'}"
+                           class="fa-solid fa-snowflake"></i>
+
+                        <i th:if="${device.type == 'TV'}"
+                           class="fa-solid fa-tv"></i>
+
+                        <i th:if="${device.type != 'LIGHT'
+                                  and device.type != 'FAN'
+                                  and device.type != 'AC'
+                                  and device.type != 'TV'}"
+                           class="fa-solid fa-microchip"></i>
+
+                    </div>
+
+
+                    <span class="badge"
+                          th:text="${device.compatibilityStatus}">
+                        PENDING
+                    </span>
+
+                </div>
+
+
+                <h3 th:text="${device.name}">
+                    Device
+                </h3>
+
+                <p th:text="${device.type + ' • ' + device.room}">
+                    Type • Room
+                </p>
+
+
+                <div class="device-status">
+
+                    <span>
+
+                        <i class="fa-solid fa-circle"
+                           th:classappend="${device.status ? 'on' : 'off'}">
+                        </i>
+
+                        <span th:text="${device.status ? 'ON' : 'OFF'}">
+                            OFF
+                        </span>
+
+                    </span>
+
+
+                    <span th:if="${!device.enabled}">
+                        Disabled
+                    </span>
+
+                </div>
+
+
+                <div class="device-control-row">
+
+                    <!-- Toggle ON / OFF (English Voice) -->
+                    <form th:action="@{'/homeowner/devices/toggle/' + ${device.id}}"
+                          method="post"
+                          th:attr="onsubmit=|event.preventDefault(); queueVoiceAndSubmit(this, '${device.name} ' + (${device.status} ? 'turned OFF' : 'turned ON'));|">
+
+                        <input type="hidden"
+                               th:name="${_csrf.parameterName}"
+                               th:value="${_csrf.token}">
+
+                        <button type="submit"
+                                class="control-btn"
+                                th:disabled="${device.compatibilityStatus.name() != 'APPROVED' or !device.enabled}">
+
+                            <i class="fa-solid fa-power-off"></i>
+
+                            ON / OFF
+
+                        </button>
+
+                    </form>
+
+
+                    <!-- Enable / Disable (English Voice) -->
+                    <form th:action="@{'/homeowner/devices/enable/' + ${device.id}}"
+                          method="post"
+                          th:attr="onsubmit=|event.preventDefault(); queueVoiceAndSubmit(this, '${device.name} ' + (${device.enabled} ? 'disabled' : 'enabled'));|">
+
+                        <input type="hidden"
+                               th:name="${_csrf.parameterName}"
+                               th:value="${_csrf.token}">
+
+                        <button type="submit"
+                                class="control-btn">
+
+                            <i class="fa-solid fa-toggle-on"></i>
+
+                            <span th:text="${device.enabled ? 'Disable' : 'Enable'}">
+                                Disable
+                            </span>
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+
+                <!-- Adjustment Range (English Voice) -->
+                <form th:action="@{'/homeowner/devices/adjust/' + ${device.id}}"
+                      method="post"
+                      class="range-form"
+                      th:attr="onsubmit=|event.preventDefault(); const val = this.querySelector('input[name=\'level\']').value; queueVoiceAndSubmit(this, '${device.name} level set to ' + val + ' percent');|">
+
+                    <input type="hidden"
+                           th:name="${_csrf.parameterName}"
+                           th:value="${_csrf.token}">
+
+                    <div class="range-header">
+
+                        <span>
+                            Adjustment
+                        </span>
+
+                        <strong>
+                            <span th:id="'level-' + ${device.id}"
+                                  th:text="${device.adjustmentLevel}">
+                                100
+                            </span>%
+                        </strong>
+
+                    </div>
+
+                    <input type="range"
+                           name="level"
+                           min="0"
+                           max="100"
+                           th:value="${device.adjustmentLevel}"
+                           th:attr="oninput=|document.getElementById('level-${device.id}').textContent=this.value|"
+                           th:disabled="${device.compatibilityStatus.name() != 'APPROVED' or !device.enabled}">
+
+                    <button type="submit"
+                            class="control-btn">
+
+                        <i class="fa-solid fa-sliders"></i>
+                        Apply
+
+                    </button>
+
+                </form>
+
+
+                <!-- Remove Device (English Voice) -->
+                <form th:action="@{'/homeowner/devices/delete/' + ${device.id}}"
+                      method="post"
+                      th:attr="onsubmit=|event.preventDefault(); queueVoiceAndSubmit(this, 'Removing ${device.name}');|">
+
+                    <input type="hidden"
+                           th:name="${_csrf.parameterName}"
+                           th:value="${_csrf.token}">
+
+                    <button class="delete-device">
+
+                        <i class="fa-solid fa-trash"></i>
+                        Remove Device
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- AUTOMATION -->
+
+    <section class="dashboard-section">
+
+        <div class="section-title-row">
+
+            <div>
+
+                <span>SMART AUTOMATION</span>
+
+                <h2>Automation Rules</h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="admin-form-card">
+
+            <form th:action="@{/homeowner/rules/save}"
+                  method="post"
+                  class="automation-form">
+
+                <input type="hidden"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}">
+
+
+                <input th:if="${editRule != null}"
+                       type="hidden"
+                       name="id"
+                       th:value="${editRule.id}">
+
+
+                <div class="field">
+
+                    <label>Rule Name</label>
+
+                    <input type="text"
+                           name="name"
+                           placeholder="Example: Turn AC ON"
+                           th:value="${editRule != null ? editRule.name : ''}"
+                           required>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>Device</label>
+
+                    <select name="deviceId"
+                            required>
+
+                        <option value="">
+                            Select Device
+                        </option>
+
+                        <option th:each="device : ${devices}"
+                                th:value="${device.id}"
+                                th:text="${device.name + ' - ' + device.room}"
+                                th:selected="${editRule != null and editRule.device != null and editRule.device.id == device.id}">
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>Condition</label>
+
+                    <select name="conditionType"
+                            required>
+
+                        <option value="TEMPERATURE"
+                                th:selected="${editRule != null and editRule.conditionType == 'TEMPERATURE'}">
+                            Temperature ≥
+                        </option>
+
+                        <option value="HUMIDITY"
+                                th:selected="${editRule != null and editRule.conditionType == 'HUMIDITY'}">
+                            Humidity ≥
+                        </option>
+
+                        <option value="SECURITY"
+                                th:selected="${editRule != null and editRule.conditionType == 'SECURITY'}">
+                            Security
+                        </option>
+
+                        <option value="TIME"
+                                th:selected="${editRule != null and editRule.conditionType == 'TIME'}">
+                            Time
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>Condition Value</label>
+
+                    <input type="text"
+                           name="conditionValue"
+                           placeholder="30 / 60 / SECURE / 18:30"
+                           th:value="${editRule != null ? editRule.conditionValue : ''}"
+                           required>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>Action</label>
+
+                    <select name="actionType"
+                            required>
+
+                        <option value="TURN_ON"
+                                th:selected="${editRule != null and editRule.actionType == 'TURN_ON'}">
+                            Turn ON
+                        </option>
+
+                        <option value="TURN_OFF"
+                                th:selected="${editRule != null and editRule.actionType == 'TURN_OFF'}">
+                            Turn OFF
+                        </option>
+
+                        <option value="ADJUST"
+                                th:selected="${editRule != null and editRule.actionType == 'ADJUST'}">
+                            Adjust
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>Action Value</label>
+
+                    <input type="text"
+                           name="actionValue"
+                           placeholder="1 / 0 / 70"
+                           th:value="${editRule != null ? editRule.actionValue : ''}"
+                           required>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>Status</label>
+
+                    <select name="active">
+
+                        <option value="true"
+                                th:selected="${editRule != null and editRule.active}">
+                            Active
+                        </option>
+
+                        <option value="false"
+                                th:selected="${editRule != null and !editRule.active}">
+                            Inactive
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <button type="submit"
+                        class="primary-btn">
+
+                    <i class="fa-solid fa-floppy-disk"></i>
+
+                    <span th:text="${editRule != null ? 'Update Rule' : 'Save Rule'}">
+                        Save Rule
+                    </span>
+
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <div class="rule-list">
+
+            <div class="rule-card"
+                 th:each="rule : ${rules}">
+
+                <div>
+
+                    <div class="rule-icon">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+
+                </div>
+
+
+                <div class="rule-content">
+
+                    <h3 th:text="${rule.name}">
+                        Rule
+                    </h3>
+
+                    <p>
+
+                        <strong th:if="${rule.device != null}"
+                                th:text="${rule.device.name}">
+                            Device
+                        </strong>
+
+                        <span>
+                            —
+                        </span>
+
+                        <span th:text="${rule.conditionType}">
+                            CONDITION
+                        </span>
+
+                        <span>
+                            →
+                        </span>
+
+                        <span th:text="${rule.conditionValue}">
+                            VALUE
+                        </span>
+
+                        <span>
+                            →
+                        </span>
+
+                        <span th:text="${rule.actionType}">
+                            ACTION
+                        </span>
+
+                        <span>
+                            :
+                        </span>
+
+                        <span th:text="${rule.actionValue}">
+                            VALUE
+                        </span>
+
+                    </p>
+
+                </div>
+
+
+                <div class="rule-actions">
+
+                    <form th:action="@{'/homeowner/rules/toggle/' + ${rule.id}}"
+                          method="post">
+
+                        <input type="hidden"
+                               th:name="${_csrf.parameterName}"
+                               th:value="${_csrf.token}">
+
+                        <button class="icon-btn"
+                                th:title="${rule.active ? 'Disable' : 'Enable'}">
+
+                            <i class="fa-solid fa-power-off"></i>
+
+                        </button>
+
+                    </form>
+
+
+                    <a th:href="@{'/homeowner/rules/edit/' + ${rule.id}}"
+                       class="icon-btn">
+
+                        <i class="fa-solid fa-pen"></i>
+
+                    </a>
+
+
+                    <form th:action="@{'/homeowner/rules/delete/' + ${rule.id}}"
+                          method="post">
+
+                        <input type="hidden"
+                               th:name="${_csrf.parameterName}"
+                               th:value="${_csrf.token}">
+
+                        <button class="icon-btn danger">
+
+                            <i class="fa-solid fa-trash"></i>
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ENVIRONMENT -->
+
+    <section class="dashboard-section">
+
+        <div class="section-title-row">
+
+            <div>
+
+                <span>HOME ENVIRONMENT</span>
+
+                <h2>Environment Monitoring</h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="environment-current">
+
+            <div>
+
+                <i class="fa-solid fa-temperature-half"></i>
+
+                <strong th:text="${latestTemperature}">
+                    --
+                </strong>
+
+                <span>°C</span>
+
+                <small>Temperature</small>
+
+            </div>
+
+
+            <div>
+
+                <i class="fa-solid fa-droplet"></i>
+
+                <strong th:text="${latestHumidity}">
+                    --
+                </strong>
+
+                <span>%</span>
+
+                <small>Humidity</small>
+
+            </div>
+
+
+            <div>
+
+                <i class="fa-solid fa-shield-halved"></i>
+
+                <strong th:text="${latestSecurity ? 'SECURE' : 'ALERT'}">
+                    SECURE
+                </strong>
+
+                <small>Security</small>
+
+            </div>
+
+        </div>
+
+
+        <div class="admin-form-card">
+
+            <form th:action="@{/homeowner/environment/add}"
+                  method="post"
+                  class="admin-grid-form">
+
+                <input type="hidden"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}">
+
+                <input type="number"
+                       step="0.1"
+                       name="temperature"
+                       placeholder="Temperature °C"
+                       required>
+
+                <input type="number"
+                       step="0.1"
+                       name="humidity"
+                       placeholder="Humidity %"
+                       required>
+
+                <select name="securityStatus">
+
+                    <option value="true">
+                        Secure
+                    </option>
+
+                    <option value="false">
+                        Alert
+                    </option>
+
+                </select>
+
+                <button type="submit"
+                        class="primary-btn">
+
+                    <i class="fa-solid fa-plus"></i>
+
+                    Add Reading
+
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <div class="reading-list">
+
+            <div class="reading-card"
+                 th:each="reading : ${readings}">
+
+                <div>
+
+                    <i class="fa-solid fa-temperature-half"></i>
+
+                    <strong
+                            th:text="${reading.temperature + ' °C'}">
+                        24 °C
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <i class="fa-solid fa-droplet"></i>
+
+                    <strong
+                            th:text="${reading.humidity + ' %'}">
+                        50 %
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <i class="fa-solid fa-shield-halved"></i>
+
+                    <strong
+                            th:text="${reading.securityStatus ? 'SECURE' : 'ALERT'}">
+                        SECURE
+                    </strong>
+
+                </div>
+
+
+                <small
+                        th:text="${#temporals.format(reading.recordedAt, 'dd MMM yyyy HH:mm')}">
+                    Time
+                </small>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script th:src="@{/js/app.js}"></script>
+
+</body>
+</html>
